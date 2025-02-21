@@ -7,7 +7,8 @@ function getRecommendations() {
         return;
     }
 
-    fetch(`http://127.0.0.1:5000/recommend?movie=${movieName}`)
+    fetch("https://movie-recommenndation-sys.onrender.com/recommend?movie=" + movieName)
+)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
