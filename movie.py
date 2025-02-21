@@ -71,9 +71,7 @@ def recommend():
 
     return jsonify({"recommendations": recommendations, "matched_movie": matched_movie.title()})
 
-@app.route('/')
-def home():
-    return "Movie Recommendation API is running! Use /recommend?movie=avatar"
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 
