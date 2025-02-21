@@ -44,11 +44,11 @@ movies['tags'] = movies['overview'].fillna('') + movies['genres'].apply(lambda x
                  movies['cast'].apply(lambda x: ' '.join(x)) + \
                  movies['crew'].apply(lambda x: ' '.join(x))
 
-new = movies[['id', 'original_title', 'tags']]
+new = movies[['id', 'original_title', 'tags']].copy()
 new['original_title'] = new['original_title'].str.lower()
 
 # Text vectorization
-cv = CountVectorizer(max_features=5000, stop_words='english')
+cv = CountVectorizer(max_features=3000, stop_words='english')
 vector = cv.fit_transform(new['tags']).toarray()
 similarity = cosine_similarity(vector)
 
