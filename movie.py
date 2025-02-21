@@ -5,6 +5,7 @@ import pandas as pd
 import ast
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.sparse import csr_matrix
 from difflib import get_close_matches
 
 app = Flask(__name__)
@@ -49,8 +50,9 @@ new['original_title'] = new['original_title'].str.lower()
 
 # Text vectorization
 cv = CountVectorizer(max_features=3000, stop_words='english')
-vector = cv.fit_transform(new['tags']).toarray()
-similarity = cosine_similarity(vector)
+vector = cv.fit_transform(new['tags'])
+vector_sparse = csr_matrix(vector)  # Convert to sparse matrix
+similarity = cosine_similarity(vector_sparse)
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
