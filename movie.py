@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import csr_matrix
 from difflib import get_close_matches
 
-app = Flask(__name__)
+app = Flask("movie")
 CORS(app)  
 
 movies = pd.read_csv("tmdb_5000_movies.csv")
