@@ -8,14 +8,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import csr_matrix
 from difflib import get_close_matches
 
-app = Flask("movie")
+app = Flask(__name__)  # Fix: Use __name__
 CORS(app)  
 
 movies = pd.read_csv("tmdb_5000_movies.csv")
 credits = pd.read_csv("tmdb_5000_credits.csv")
 
 movies = movies.merge(credits, left_on='id', right_on='movie_id', how='inner').drop(columns=['movie_id'])
-
 
 movies = movies[['id', 'original_title', 'genres', 'keywords', 'overview', 'cast', 'crew']]
 movies.dropna(inplace=True)
@@ -40,9 +39,10 @@ def fetch_director(text):
 
 movies['crew'] = movies['crew'].apply(fetch_director)
 
-movies['tags'] = movies['overview'].fillna('') + movies['genres'].apply(lambda x: ' '.join(x)) + \
-                 movies['keywords'].apply(lambda x: ' '.join(x)) + \
-                 movies['cast'].apply(lambda x: ' '.join(x)) + \
+movies['tags'] = movies['overview'].fillna('') + ' ' + \
+                 movies['genres'].apply(lambda x: ' '.join(x)) + ' ' + \
+                 movies['keywords'].apply(lambda x: ' '.join(x)) + ' ' + \
+                 movies['cast'].apply(lambda x: ' '.join(x)) + ' ' + \
                  movies['crew'].apply(lambda x: ' '.join(x))
 
 new = movies[['id', 'original_title', 'tags']].copy()
@@ -53,6 +53,10 @@ cv = CountVectorizer(max_features=3000, stop_words='english')
 vector = cv.fit_transform(new['tags'])
 vector_sparse = csr_matrix(vector)  # Convert to sparse matrix
 similarity = cosine_similarity(vector_sparse)
+
+@app.route('/')  # Fix: Add home route
+def home():
+    return "Movie Recommendation API is running! Use /recommend?movie=avatar"
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
@@ -71,7 +75,5 @@ def recommend():
 
     return jsonify({"recommendations": recommendations, "matched_movie": matched_movie.title()})
 
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
